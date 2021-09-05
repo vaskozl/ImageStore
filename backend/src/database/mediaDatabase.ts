@@ -14,13 +14,13 @@ export async function getMedia(searchTerm: string, label: string): Promise<unkno
     return transaction(async (client) => {
         const result = await client.query(`SELECT OID::text as id, ${photo} as name, h as height, w as width, date as date, type as type, coordX as coordX, coordY as coordY FROM ${await media} WHERE         
         (
-            ${photo} like $1::text
+            ${photo} like '%'||$1::text||'%'
             OR
             OID IN
             (
                 SELECT photo
                 FROM ${await labelTable}
-                WHERE label = $2::text
+                WHERE label like '%'||$2::text||'%'
             )
         )
         ORDER BY date DESC
