@@ -44,7 +44,7 @@ jobs:
             vaskozl/imagestored-frontend:${{ steps.parse_semver.outputs.MAJOR_VERSION }}
             vaskozl/imagestored-frontend:${{ steps.parse_semver.outputs.MAJOR_MINOR }}
             vaskozl/imagestored-frontend:${{ steps.parse_semver.outputs.FULL_VERSION }}
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
@@ -55,8 +55,8 @@ jobs:
       - name: Parse semantic version
         id: parse_semver
         run: |
-          minor_version=`echo $full_version | cut -d'.' -f2`
           full_version=`jq -r .version < backend/package.json`
+          minor_version=`echo $full_version | cut -d'.' -f2`
           major_version=`echo $full_version | cut -d'.' -f1`
           major_minor=`echo $major_version.$minor_version`
           echo ::set-output name=MAJOR_VERSION::$major_version
@@ -87,7 +87,7 @@ jobs:
             vaskozl/imagestored-backend:${{ steps.parse_semver.outputs.FULL_VERSION }}
           context: backend
           file: ./backend/Dockerfile
-          platforms: linux/amd64,linux/arm64,linux/arm/v7
+          platforms: linux/amd64,linux/arm64
       -
         name: Image digest
         run: echo ${{ steps.docker_build.outputs.digest }}
