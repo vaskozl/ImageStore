@@ -43,13 +43,13 @@ export async function getMediaInAlbum(album: string, searchTerm: string, label: 
     return transaction(async (client) => {
         const result = await client.query(`SELECT OID::text as id, ${photo} as name, h as height, w as width, date as date, type as type, coordX as coordX, coordY as coordY FROM ${await media} WHERE 
         (
-            ${photo} like '%'||$1::text||'%'
+            LOWER(${photo}) like '%'||$1::text||'%'
             OR
             OID IN
             (
                 SELECT photo
                 FROM ${await labelTable}
-                WHERE label like '%'||$3::text||'%'
+                WHERE LOWER(label) like '%'||$3::text||'%'
             )
         ) 
         AND OID IN
