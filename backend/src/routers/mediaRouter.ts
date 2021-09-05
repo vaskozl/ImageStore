@@ -12,6 +12,7 @@ import Filetype from 'file-type'
 sharp.cache({ files: 0 });
 
 export const router = express.Router();
+const IMAGE_HEIGHT = 384
 
 router.get('/all', async (req, res) => {
     try {
@@ -103,7 +104,7 @@ router.post('/add', async (req, res) => {
                     await fsPromises.rename(dir + f.filename, dir + oid);
 
                     if (dims.height > dims.width / 5) //Default case, but incase the width is over 5 times the height, we cap the width at 1500
-                        await sharp(dir + oid, { failOnError: false }).resize({ width: Math.ceil(dims.width / dims.height * 300), height: 300 }).rotate().jpeg({ quality: 85 }).toFile(dir + "thumb_" + oid)
+                        await sharp(dir + oid, { failOnError: false }).resize({ width: Math.ceil(dims.width / dims.height * IMAGE_HEIGHT), height: IMAGE_HEIGHT }).rotate().jpeg({ quality: 85 }).toFile(dir + "thumb_" + oid)
                     else
                         await sharp(dir + oid, { failOnError: false }).resize({ width: 1500, height: Math.ceil(dims.height / dims.width * 1500) }).rotate().jpeg({ quality: 85 }).toFile(dir + "thumb_" + oid)
                     oids.push(oid)
@@ -147,9 +148,9 @@ router.post('/add', async (req, res) => {
 
                         let dimsS: string;
                         if (dims.height > dims.width / 5) //Default case, but incase the width is over 5 times the height, we cap the width at 1500
-                            dimsS = "?x300"
+                            dimsS = "?x" + IMAGE_HEIGHT
                         else
-                            dimsS = "1500x?"
+                            dimsS = 5*IMAGE_HEIGHT + "x?"
 
                         var process = new ffmpegV(dir + f.filename);
                         await process.then(async function (video) {
