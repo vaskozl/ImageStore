@@ -13,13 +13,13 @@ jobs:
       - name: Parse semantic version
         id: parse_semver
         run: |
-          frontend_full_version=`jq .version < frontend/package.json`
-          frontend_major_version=`echo $frontend_full_version | cut -d'.' -f1`
-          frontend_minor_version=`echo $frontend_full_version | cut -d'.' -f2`
-          frontend_major_minor=`echo $frontend_major_version.$frontend_minor_version`
-          echo ::set-output name=FRONTEND_MAJOR_VERSION::$frontend_major_version
-          echo ::set-output name=FRONTEND_MAJOR_MINOR::$frontend_major_minor
-          echo ::set-output name=FRONTEND_FULL_VERSION::$frontend_full_version
+          full_version=`jq -r .version < frontend/package.json`
+          major_version=`echo $full_version | cut -d'.' -f1`
+          minor_version=`echo $full_version | cut -d'.' -f2`
+          major_minor=`echo $major_version.$minor_version`
+          echo ::set-output name=MAJOR_VERSION::$major_version
+          echo ::set-output name=MAJOR_MINOR::$major_minor
+          echo ::set-output name=FULL_VERSION::$full_version
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -40,10 +40,10 @@ jobs:
           context: frontend
           push: true
           tags: |
-            vaskozl/imagestored/frontend:latest
-            vaskozl/imagestored/frontend:${{ steps.parse_semver.outputs.FRONTEND_MAJOR_VERSION }}
-            vaskozl/imagestored/frontend:${{ steps.parse_semver.outputs.FRONTEND_MAJOR_MINOR }}
-            vaskozl/imagestored/frontend:${{ steps.parse_semver.outputs.FRONTEND_FULL_VERSION }}
+            vaskozl/imagestored-frontend:latest
+            vaskozl/imagestored-frontend:${{ steps.parse_semver.outputs.MAJOR_VERSION }}
+            vaskozl/imagestored-frontend:${{ steps.parse_semver.outputs.MAJOR_MINOR }}
+            vaskozl/imagestored-frontend:${{ steps.parse_semver.outputs.FULL_VERSION }}
           platforms: linux/amd64,linux/arm64,linux/arm/v7
       -
         name: Image digest
@@ -55,13 +55,13 @@ jobs:
       - name: Parse semantic version
         id: parse_semver
         run: |
-          backend_minor_version=`echo $backend_full_version | cut -d'.' -f2`
-          backend_full_version=`jq .version < backend/package.json`
-          backedn_major_version=`echo $backend_full_version | cut -d'.' -f1`
-          backend_major_minor=`echo $backend_major_version.$backend_minor_version`
-          echo ::set-output name=BACKEND_MAJOR_VERSION::$backend_major_version
-          echo ::set-output name=BACKEND_MAJOR_MINOR::$backend_major_minor
-          echo ::set-output name=BACKEND_FULL_VERSION::$backend_full_version
+          minor_version=`echo $full_version | cut -d'.' -f2`
+          full_version=`jq -r .version < backend/package.json`
+          major_version=`echo $full_version | cut -d'.' -f1`
+          major_minor=`echo $major_version.$minor_version`
+          echo ::set-output name=MAJOR_VERSION::$major_version
+          echo ::set-output name=MAJOR_MINOR::$major_minor
+          echo ::set-output name=FULL_VERSION::$full_version
       -
         name: Set up QEMU
         uses: docker/setup-qemu-action@v1
@@ -81,10 +81,10 @@ jobs:
         with:
           push: true
           tags: |
-            vaskozl/imagestored/backend:latest
-            vaskozl/imagestored/backend:${{ steps.parse_semver.outputs.BACKEND_MAJOR_VERSION }}
-            vaskozl/imagestored/backend:${{ steps.parse_semver.outputs.BACKEND_MAJOR_MINOR }}
-            vaskozl/imagestored/backend:${{ steps.parse_semver.outputs.BACKEND_FULL_VERSION }}
+            vaskozl/imagestored-backend:latest
+            vaskozl/imagestored-backend:${{ steps.parse_semver.outputs.MAJOR_VERSION }}
+            vaskozl/imagestored-backend:${{ steps.parse_semver.outputs.MAJOR_MINOR }}
+            vaskozl/imagestored-backend:${{ steps.parse_semver.outputs.FULL_VERSION }}
           context: backend
           file: ./backend/Dockerfile
           platforms: linux/amd64,linux/arm64,linux/arm/v7
